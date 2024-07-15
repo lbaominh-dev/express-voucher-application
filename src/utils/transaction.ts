@@ -51,6 +51,8 @@ export const withTransaction = async (callback: WithTransactionCallBack) => {
       await commitTransactionWithRetry(session);
       return result;
     }, session);
+  } catch (error) {
+    throw error;
   } finally {
     await session.endSession();
   }

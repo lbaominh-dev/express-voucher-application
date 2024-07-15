@@ -6,7 +6,6 @@ export const eventCreateSchema = z.object({
   location: z.string().min(3).max(255),
   date: z.number(),
   maxQuantity: z.number().int().positive(),
-  quantity: z.number().int().positive(),
 });
 
 export const eventUpdateSchema = z.object({
@@ -15,7 +14,6 @@ export const eventUpdateSchema = z.object({
   location: z.string().min(3).max(255),
   date: z.number(),
   maxQuantity: z.number().int().positive(),
-  quantity: z.number().int().positive(),
 }).partial();
 
 export type EventCreateInput = z.infer<typeof eventCreateSchema>;

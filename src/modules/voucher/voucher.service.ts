@@ -27,7 +27,7 @@ const update = async (id: string, data: any) => {
 };
 
 const create = async (voucher: any, session: mongoose.mongo.ClientSession) => {
-  const event = await eventServices.getById(voucher.eventId.toString());
+  const event = await eventServices.getById(voucher.eventId);
 
   if (!event) {
     throw new ApiError(httpStatus.NOT_FOUND,"Event not found");

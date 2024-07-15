@@ -13,7 +13,7 @@ import { errorConverter, errorHandler } from "./modules/errors";
 const app = express();
 app.use(cookieParser());
 app.use(express.json());
-app.use(loggerMiddleware);
+// app.use(loggerMiddleware);
 
 app.get("/health-check", (_, res) => {
   const isConnectionAlive = mongoose.connection.readyState;

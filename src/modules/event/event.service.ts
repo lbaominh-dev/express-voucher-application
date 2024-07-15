@@ -3,6 +3,7 @@ import { EventEditStatus, EventModel } from "./event.model";
 import mongoose from "mongoose";
 import { ApiError } from "../errors";
 import httpStatus from "http-status";
+import { th } from "@faker-js/faker";
 
 const LOCKED_TIME = 1000 * 10; // 10 seconds
 
@@ -31,7 +32,7 @@ const checkEditable = async (id: string, userId: string) => {
     throw new ApiError(httpStatus.NOT_FOUND, "Event not found");
   }
 
-  if (event.expiredEditingDate && event.expiredEditingDate > new Date()) {
+  if (event.editStatus === EventEditStatus.LOCKED) {
     if (event.userEditing && event.userEditing?.toString() !== userId) {
       throw new ApiError(
         httpStatus.FORBIDDEN,
@@ -42,6 +43,8 @@ const checkEditable = async (id: string, userId: string) => {
     if (event.expiredEditingDate && event.expiredEditingDate < new Date()) {
       throw new ApiError(httpStatus.FORBIDDEN, "Editing time has expired");
     }
+
+    throw new ApiError(httpStatus.BAD_REQUEST, "Event is locked");
   }
 
   return event;

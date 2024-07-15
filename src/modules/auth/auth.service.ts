@@ -1,8 +1,8 @@
 import httpStatus from "http-status";
+import jwt from "jsonwebtoken";
 import { ApiError } from "../errors";
 import { UserModel } from "../user/user.model";
 import { LoginUserInput, RegisterUserInput } from "./auth.validation";
-import jwt from "jsonwebtoken";
 
 const registerUser = async (user: RegisterUserInput) => {
   const checkIsEmailExist = await UserModel.findOne({ email: user.email });
@@ -10,7 +10,13 @@ const registerUser = async (user: RegisterUserInput) => {
     throw new ApiError(httpStatus.CONFLICT, "Email already exists");
   }
 
-  return await UserModel.create(user);
+  const newUser = await UserModel.create(user);
+
+  return {
+    _id: newUser._id,
+    name: newUser.name,
+    email: newUser.email,
+  };
 };
 
 const loginUser = async (data: LoginUserInput) => {
@@ -22,7 +28,7 @@ const loginUser = async (data: LoginUserInput) => {
 
   const accessToken = user.generateAccessToken();
   const refreshToken = user.generateRefreshToken();
-  const isPasswordValid = user.isPasswordCorrect(data.password);
+  const isPasswordValid = await user.isPasswordCorrect(data.password);
   user.refreshToken = refreshToken;
   await user.save({ validateBeforeSave: false });
 
