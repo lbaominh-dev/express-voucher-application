@@ -8,6 +8,7 @@ import userRoutes from "./modules/user/user.route";
 import eventRoutes from "./modules/event/event.route";
 import voucherRoutes from "./modules/voucher/voucher.route";
 import swaggerSpec from "./swagger";
+import { errorConverter, errorHandler } from "./modules/errors";
 
 const app = express();
 app.use(cookieParser());
@@ -29,5 +30,8 @@ app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
 // Routes
 app.use("/api", authRoutes, userRoutes, eventRoutes, voucherRoutes);
+
+app.use(errorConverter);
+app.use(errorHandler);
 
 export default app;

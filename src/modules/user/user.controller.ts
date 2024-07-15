@@ -1,17 +1,11 @@
 import { Request, Response } from "express";
 import userService from "./user.service";
+import catchAsync from "@/utils/catchAsync";
+import httpStatus from "http-status";
 
-export const getMe = async (req: Request, res: Response) => {
-  try {
-    const { _id } = (req as any).userData;
-    const me = await userService.getMe(_id);
+export const getMe = catchAsync(async (req: Request, res: Response) => {
+  const { _id } = (req as any).userData;
+  const me = await userService.getMe(_id);
 
-    if (!me) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    res.status(200).json(me);
-  } catch (error) {
-    res.status(500).json({ message: (error as any).message });
-  }
-};
+  res.status(httpStatus.OK).json(me);
+});

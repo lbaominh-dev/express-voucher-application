@@ -17,7 +17,6 @@ export interface Event {
   editStatus: EventEditStatus;
   userEditing?: mongoose.Types.ObjectId;
   expiredEditingDate?: Date;
-  vouchers: Voucher[];
 }
 
 export const EventSchema = new mongoose.Schema<Event>({
@@ -34,7 +33,6 @@ export const EventSchema = new mongoose.Schema<Event>({
   },
   userEditing: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   expiredEditingDate: { type: Date },
-  vouchers: [VoucherSchema],
 });
 
 export const EventModel = mongoose.model<Event>("Event", EventSchema);

@@ -34,7 +34,7 @@ export const messageWorker = new Worker(
 
 export const startWorker = async () => {
   messageWorker.on("completed", (job) => {
-    console.log(`Job completed with result ${job.returnvalue}`);
+    console.log('Job completed with result', job.name, job.data)
   });
   messageWorker.on("failed", (job) => {
     console.log(`Job failed with reason ${job?.failedReason}`);

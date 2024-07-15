@@ -1,50 +1,56 @@
-import e from "express";
-import eventRepository from "./event.reponsitory";
 import { EventCreateInput, EventUpdateInput } from "./event.validation";
-import { EventEditStatus } from "./event.model";
+import { EventEditStatus, EventModel } from "./event.model";
 import mongoose from "mongoose";
+import { ApiError } from "../errors";
+import httpStatus from "http-status";
+
+const LOCKED_TIME = 1000 * 10; // 10 seconds
 
 const createEvent = async (event: EventCreateInput) => {
-  const newEvent = await eventRepository.create(event);
+  const newEvent = await EventModel.create(event);
   return newEvent;
 };
 
 const getAllEvents = async () => {
-  return await eventRepository.getAll();
+  return await EventModel.find();
 };
 
 const getEventById = async (id: string) => {
-  return await eventRepository.getById(id);
+  return await EventModel.findById(id);
 };
 
 const updateEvent = async (id: string, event: EventUpdateInput) => {
-  const updatedEvent = await eventRepository.update(id, event);
+  const updatedEvent = await EventModel.findByIdAndUpdate(id, event);
   return updatedEvent;
 };
 
 const checkEditable = async (id: string, userId: string) => {
-  const event = await eventRepository.getById(id);
+  const event = await EventModel.findById(id);
 
   if (!event) {
-    throw new Error("Event not found");
+    throw new ApiError(httpStatus.NOT_FOUND, "Event not found");
   }
 
-  if (event.userEditing?.toString() !== userId) {
-    throw new Error("You are not allowed to edit this event");
-  }
+  if (event.expiredEditingDate && event.expiredEditingDate > new Date()) {
+    if (event.userEditing && event.userEditing?.toString() !== userId) {
+      throw new ApiError(
+        httpStatus.FORBIDDEN,
+        "You are not allowed to edit this event"
+      );
+    }
 
-  if (event.expiredEditingDate && event.expiredEditingDate < new Date()) {
-    throw new Error("Editing time is expired");
+    if (event.expiredEditingDate && event.expiredEditingDate < new Date()) {
+      throw new ApiError(httpStatus.FORBIDDEN, "Editing time has expired");
+    }
   }
 
   return event;
 };
 
 const maintainEditable = async (id: string, userId: string) => {
-  const event = await eventRepository.getById(id);
-
+  const event = await EventModel.findById(id);
   if (!event) {
-    throw new Error("Event not found");
+    throw new ApiError(httpStatus.NOT_FOUND, "Event not found");
   }
 
   const stillEditing =
@@ -54,30 +60,39 @@ const maintainEditable = async (id: string, userId: string) => {
     event.editStatus === EventEditStatus.LOCKED &&
     event.userEditing?.toString() !== userId
   ) {
-    throw new Error("Event is locked");
+    throw new ApiError(
+      httpStatus.FORBIDDEN,
+      "You are not allowed to maintain this event"
+    );
   }
 
   event.editStatus = EventEditStatus.LOCKED;
   event.userEditing = new mongoose.Types.ObjectId(userId);
-  event.expiredEditingDate = new Date(new Date().getTime() + 1000 * 60 * 5);
+  event.expiredEditingDate = new Date(new Date().getTime() + LOCKED_TIME);
   await event.save();
 
   return event;
 };
 
 const releaseEditable = async (id: string, userId: string) => {
-  const event = await eventRepository.getById(id);
+  const event = await EventModel.findById(id);
 
   if (!event) {
-    throw new Error("Event not found");
+    throw new ApiError(httpStatus.NOT_FOUND, "Event not found");
   }
 
-  if (event.editStatus === EventEditStatus.EDITABLE) {
-    throw new Error("Event is already editable");
+  const stillEditing =
+    event.expiredEditingDate && event.expiredEditingDate > new Date();
+
+  if (!stillEditing || event.editStatus === EventEditStatus.EDITABLE) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Event is already editable");
   }
 
   if (event.userEditing?.toString() !== userId) {
-    throw new Error("You are not allowed to release this event");
+    throw new ApiError(
+      httpStatus.FORBIDDEN,
+      "You are not allowed to release this event"
+    );
   }
 
   event.editStatus = EventEditStatus.EDITABLE;

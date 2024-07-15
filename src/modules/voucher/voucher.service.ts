@@ -1,34 +1,40 @@
 import mongoose from "mongoose";
-import voucherRepository from "./voucher.repository";
 import eventServices from "../event/event.service";
+import { VoucherModel } from "./voucher.model";
+import { ApiError } from "../errors";
+import httpStatus from "http-status";
+import { EventModel } from "../event/event.model";
 
 const getAll = async () => {
-  const vouchers = await voucherRepository.getAll();
+  const vouchers = await VoucherModel.find().populate({
+    path: "eventId",
+    select: ["name", "quantity", "maxQuantity", "date"],
+  });
 
   return vouchers;
 };
 
 const update = async (id: string, data: any) => {
-  const voucher = await voucherRepository.getById(id);
+  const voucher = await VoucherModel.findById(id);
 
   if (!voucher) {
-    throw new Error("Voucher not found");
+    throw new ApiError(httpStatus.NOT_FOUND,"Voucher not found");
   }
 
-  const updatedVoucher = await voucherRepository.update(id, data);
+  const updatedVoucher = await VoucherModel.findByIdAndUpdate(id, data);
 
   return updatedVoucher;
-}
+};
 
 const create = async (voucher: any, session: mongoose.mongo.ClientSession) => {
   const event = await eventServices.getById(voucher.eventId.toString());
 
   if (!event) {
-    throw new Error("Event not found");
+    throw new ApiError(httpStatus.NOT_FOUND,"Event not found");
   }
 
-  if(event.quantity >= event.maxQuantity) {
-    throw new Error("Event is full");
+  if (event.quantity >= event.maxQuantity) {
+    throw new ApiError(httpStatus.BAD_REQUEST,"Event is full");
   }
 
   const data = {
@@ -37,11 +43,10 @@ const create = async (voucher: any, session: mongoose.mongo.ClientSession) => {
     eventId: event._id.toString(),
   };
 
-  const [newVoucher] = await voucherRepository.create(data, { session });
+  const [newVoucher] = await VoucherModel.create([data], { session });
 
   await event.updateOne({
     $inc: { quantity: 1 },
-    $addToSet: { vouchers: newVoucher },
   });
   await event.save();
 
@@ -49,13 +54,15 @@ const create = async (voucher: any, session: mongoose.mongo.ClientSession) => {
 };
 
 const remove = async (id: string) => {
-  const voucher = await voucherRepository.getById(id);
+  const voucher = await VoucherModel.findById(id);
 
   if (!voucher) {
     throw new Error("Voucher not found");
   }
 
-  const event = await eventServices.getById(voucher.eventId as unknown as string);
+  const event = await EventModel.findById(
+    voucher.eventId as unknown as string
+  );
 
   if (!event) {
     throw new Error("Event not found");
@@ -63,13 +70,11 @@ const remove = async (id: string) => {
 
   await event.updateOne({
     $inc: { quantity: -1 },
-    $pull: { vouchers: voucher },
   });
   await event.save();
 
-  await voucherRepository.remove(id);
-
-}
+  await VoucherModel.findByIdAndDelete(id);
+};
 
 const generateCode = () => {
   return Math.random().toString(36).substring(2, 15);

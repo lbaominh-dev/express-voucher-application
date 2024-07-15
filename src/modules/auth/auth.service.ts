@@ -1,21 +1,23 @@
-import userRepository from "../user/user.reponsitory";
+import httpStatus from "http-status";
+import { ApiError } from "../errors";
+import { UserModel } from "../user/user.model";
 import { LoginUserInput, RegisterUserInput } from "./auth.validation";
 import jwt from "jsonwebtoken";
 
 const registerUser = async (user: RegisterUserInput) => {
-  const checkIsEmailExist = await userRepository.getByEmail(user.email);
+  const checkIsEmailExist = await UserModel.findOne({ email: user.email });
   if (checkIsEmailExist) {
-    throw new Error("Email already exists");
+    throw new ApiError(httpStatus.CONFLICT, "Email already exists");
   }
 
-  return await userRepository.create(user);
+  return await UserModel.create(user);
 };
 
 const loginUser = async (data: LoginUserInput) => {
-  const user = await userRepository.getByEmail(data.email);
+  const user = await UserModel.findOne({ email: data.email });
 
   if (!user) {
-    throw new Error("User not found");
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
   }
 
   const accessToken = user.generateAccessToken();
@@ -25,7 +27,7 @@ const loginUser = async (data: LoginUserInput) => {
   await user.save({ validateBeforeSave: false });
 
   if (!isPasswordValid) {
-    throw new Error("Invalid password");
+    throw new ApiError(httpStatus.UNAUTHORIZED, "Invalid password");
   }
 
   return {
@@ -36,7 +38,7 @@ const loginUser = async (data: LoginUserInput) => {
 
 const checkRefreshToken = async (refreshToken: string) => {
   if (!refreshToken) {
-    throw new Error("Unauthorized");
+    throw new ApiError(httpStatus.UNAUTHORIZED, "Unauthorized");
   }
 
   const decoded = jwt.verify(
@@ -48,10 +50,10 @@ const checkRefreshToken = async (refreshToken: string) => {
 };
 
 const generateToken = async (userId: string) => {
-  const user = await userRepository.getById(userId);
+  const user = await UserModel.findById(userId);
 
   if (!user) {
-    throw new Error("User not found");
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
   }
 
   const accessToken = user.generateAccessToken();
