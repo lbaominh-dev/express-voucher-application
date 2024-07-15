@@ -1,0 +1,30 @@
+version: "3.8"
+services:
+  redis: 
+    image: redis
+    container_name: redis
+    ports:
+      - 6379:6379
+    networks:
+      - mongo-network
+  mongodb-primary: 
+    image: mongo
+    container_name: mongodb-primary
+    ports:
+      - 27017:27017
+    networks:
+      - mongo-network
+    command: mongod --port 27017
+    volumes:
+      - mongo-data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root1234
+
+volumes:
+  mongo-data:
+
+
+networks:
+  mongo-network:
+    driver: bridge
