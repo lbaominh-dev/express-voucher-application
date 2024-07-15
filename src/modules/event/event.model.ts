@@ -15,6 +15,8 @@ export interface Event {
   maxQuantity: number;
   quantity: number;
   editStatus: EventEditStatus;
+  userEditing?: mongoose.Types.ObjectId;
+  expiredEditingDate?: Date;
   vouchers: Voucher[];
 }
 
@@ -30,6 +32,8 @@ export const EventSchema = new mongoose.Schema<Event>({
     required: true,
     default: EventEditStatus.EDITABLE,
   },
+  userEditing: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  expiredEditingDate: { type: Date },
   vouchers: [VoucherSchema],
 });
 

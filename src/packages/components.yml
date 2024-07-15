@@ -57,7 +57,7 @@ components:
             message: Not found
 
   securitySchemes:
-    bearerAuth:
+    BearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT

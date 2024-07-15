@@ -4,7 +4,7 @@ import { getMe } from "./user.controller";
 
 const app = express.Router();
 
-app.get("/me", authMiddleware, getMe);
+app.get("/user/me", authMiddleware, getMe);
 
 export default app;
 

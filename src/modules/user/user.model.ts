@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { JWT_SECRET } from "@/config";
 
 /**
  * @swagger
@@ -64,7 +65,7 @@ UserSchema.methods.generateAccessToken = function () {
       _id: this._id,
       email: this.email,
     },
-    process.env.JWT_SECRET as string,
+    JWT_SECRET,
     {
       expiresIn: "15m",
     }

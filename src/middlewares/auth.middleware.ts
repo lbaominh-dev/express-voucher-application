@@ -1,3 +1,4 @@
+import { JWT_SECRET } from "@/config";
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
@@ -17,7 +18,7 @@ const authMiddleware = async (
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
+    const decoded = jwt.verify(token, JWT_SECRET);
     req.userData = decoded;
 
     next();

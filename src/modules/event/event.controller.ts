@@ -26,7 +26,7 @@ export const getEventById = async (req: Request, res: Response) => {
   } catch (error) {
     res.status(500).json({ message: (error as any).message });
   }
-}
+};
 
 export const updateEvent = async (req: Request, res: Response) => {
   try {
@@ -34,5 +34,41 @@ export const updateEvent = async (req: Request, res: Response) => {
     res.status(200).json(event);
   } catch (error) {
     res.status(500).json({ message: (error as any).message });
+  }
+};
+
+export const checkEditable = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { _id: userId } = (req as any).userData;
+
+  try {
+    const event = await eventServices.checkEditable(id, userId);
+    res.status(200).json(event);
+  } catch (error) {
+    res.status(400).json({ message: (error as any).message });
+  }
+};
+
+export const maintainEditable = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { _id: userId } = (req as any).userData;
+
+  try {
+    const event = await eventServices.maintainEditable(id, userId);
+    res.status(200).json(event);
+  } catch (error) {
+    res.status(400).json({ message: (error as any).message });
+  }
+}
+
+export const releaseEditable = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { _id: userId } = (req as any).userData;
+
+  try {
+    const event = await eventServices.releaseEditable(id, userId);
+    res.status(200).json(event);
+  } catch (error) {
+    res.status(400).json({ message: (error as any).message });
   }
 }

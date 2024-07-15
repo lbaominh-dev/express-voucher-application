@@ -1,14 +1,19 @@
 import express from "express";
-import { createVoucher, getAllVouchers } from "./voucher.controller";
+import {
+  createVoucher,
+  deleteVoucher,
+  getAllVouchers,
+  updateVoucher,
+} from "./voucher.controller";
 import validateMiddleware from "@/middlewares/validate.middleware";
-import { voucherCreateSchema } from "./voucher.validation";
+import { voucherCreateSchema, voucherUpdateSchema } from "./voucher.validation";
 
 const app = express.Router();
 
-
 app.get("/vouchers", getAllVouchers);
 app.post("/voucher", validateMiddleware(voucherCreateSchema), createVoucher);
-
+app.put("/voucher/:id", validateMiddleware(voucherUpdateSchema), updateVoucher);
+app.delete("/voucher/:id", deleteVoucher);
 
 export default app;
 
@@ -17,7 +22,7 @@ export default app;
  * tags:
  *  name: Vouchers
  *  description: API for Vouchers in the system
-*/
+ */
 
 /**
  * @swagger
@@ -29,7 +34,7 @@ export default app;
  *      responses:
  *         200:
  *          description: List of Vouchers
-*/
+ */
 
 /**
  * @swagger
@@ -45,14 +50,65 @@ export default app;
  *             required:
  *              - discount
  *              - eventId
+ *              - email
+ *             properties:
+ *              discount:
+ *               type: number
+ *              eventId:
+ *               type: string
+ *              email:
+ *               type: string
+ *   responses:
+ *      201:
+ *          description: Voucher created successfully
+ *      500:
+ *          description: Internal server error
+ */
+
+/**
+ * @swagger
+ * /voucher/{id}:
+ *  put:
+ *   summary: Update a Voucher
+ *   tags: [Vouchers]
+ *   parameters:
+ *        - in: path
+ *          name: id
+ *          required: true
+ *          schema:
+ *            type: string
+ *   requestBody:
+ *      content:
+ *         application/json:
+ *           schema:
+ *             type: object
  *             properties:
  *              discount:
  *               type: number
  *              eventId:
  *               type: string
  *   responses:
- *      201:
- *          description: Voucher created successfully
+ *      200:
+ *          description: Voucher update successfully
+ *      500:
+ *          description: Internal server error
+ */
+
+/**
+ * @swagger
+ * /voucher/{id}:
+ *  delete:
+ *   summary: Delete a Voucher
+ *   tags: [Vouchers]
+ *   parameters:
+ *        - in: path
+ *          name: id
+ *          required: true
+ *          schema:
+ *            type: string
+ *   responses:
+ *      204:
+ *          description: Voucher deleted successfully
  *      500:
  *          description: Internal server error
  */

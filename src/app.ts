@@ -3,7 +3,6 @@ import express from "express";
 import mongoose from "mongoose";
 import swaggerUI from "swagger-ui-express";
 import loggerMiddleware from "./middlewares/logger.middleware";
-import productRoutes from "./modules/product/product.route";
 import authRoutes from "./modules/auth/auth.route";
 import userRoutes from "./modules/user/user.route";
 import eventRoutes from "./modules/event/event.route";
@@ -29,6 +28,6 @@ app.get("/health-check", (_, res) => {
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
 // Routes
-app.use("/api", authRoutes, userRoutes, productRoutes, eventRoutes, voucherRoutes);
+app.use("/api", authRoutes, userRoutes, eventRoutes, voucherRoutes);
 
 export default app;
