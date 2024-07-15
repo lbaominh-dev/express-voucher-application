@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 /**
- * @openapi
+ * @swagger
  * components:
  *   schemas:
  *     User:

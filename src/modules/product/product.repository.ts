@@ -1,33 +1,33 @@
 import { QueryOptions } from "mongoose";
 import Product from "./product.model";
-import { CreateProductInput, UpdateProductInput } from "./product.validation";
+import { createInput, updateInput } from "./product.validation";
 
-export const getAllProducts = async () => {
+export const getAll = async () => {
   return await Product.find({});
 };
 
-export const createProduct = async (product: CreateProductInput) => {
+export const create = async (product: createInput) => {
   return await Product.create(product);
 };
 
-export const getProductById = async (id: string) => {
+export const getById = async (id: string) => {
   return await Product.findById(id);
 };
 
-export const updateProduct = async (id: string, product: UpdateProductInput, opts?: QueryOptions) => {
+export const update = async (id: string, product: updateInput, opts?: QueryOptions) => {
   return await Product.findByIdAndUpdate(id, product, opts);
 };
 
-export const deleteProduct = async (id: string) => {
+export const remove = async (id: string) => {
   return await Product.findByIdAndDelete(id);
 };
 
 const productRepository = {
-  getAllProducts,
-  createProduct,
-  getProductById,
-  updateProduct,
-  deleteProduct,
+  getAll,
+  create,
+  getById,
+  update,
+  remove,
 };
 
 export default productRepository;

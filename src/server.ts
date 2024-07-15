@@ -1,3 +1,5 @@
+import 'module-alias/register';
+
 import connectDB from "./lib/database";
 import dotenv from "dotenv";
 import path from "path";
@@ -9,7 +11,7 @@ dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 const PORT = process.env.PORT || 3000;
 
-videoQueue.add({ video: "http://example.com/video1.mov" });
+// videoQueue.add({ video: "http://example.com/video1.mov" });
 // initAgenda()
 connectDB();
 

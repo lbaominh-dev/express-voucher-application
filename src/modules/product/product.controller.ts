@@ -1,27 +1,27 @@
 import { RequestHandler } from "express";
 import productServices from "./product.service";
 
-export const getAllProducts: RequestHandler = async (req, res) => {
+export const getAll: RequestHandler = async (req, res) => {
   try {
-    const products = await productServices.getAllProducts();
+    const products = await productServices.getAll();
     res.status(200).json(products);
   } catch (error) {
     res.status(500).json({ message: (error as any).message });
   }
 };
 
-export const createProduct: RequestHandler = async (req, res) => {
+export const create: RequestHandler = async (req, res) => {
   try {
-    const product = await productServices.createProduct(req.body);
+    const product = await productServices.create(req.body);
     res.status(201).json(product);
   } catch (error) {
     res.status(500).json({ message: (error as any).message });
   }
 };
 
-export const getProductById: RequestHandler = async (req, res) => {
+export const getById: RequestHandler = async (req, res) => {
   try {
-    const product = await productServices.getProductById(req.params.id);
+    const product = await productServices.getById(req.params.id);
 
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
@@ -33,15 +33,15 @@ export const getProductById: RequestHandler = async (req, res) => {
   }
 };
 
-export const updateProduct: RequestHandler = async (req, res) => {
+export const update: RequestHandler = async (req, res) => {
   try {
-    const product = await productServices.updateProduct(req.params.id, req.body);
+    const product = await productServices.update(req.params.id, req.body);
 
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    const updatedProduct = await productServices.getProductById(req.params.id);
+    const updatedProduct = await productServices.getById(req.params.id);
 
     res.status(200).json(updatedProduct);
   } catch (error) {
@@ -49,9 +49,9 @@ export const updateProduct: RequestHandler = async (req, res) => {
   }
 };
 
-export const deleteProduct: RequestHandler = async (req, res) => {
+export const remove: RequestHandler = async (req, res) => {
   try {
-    const product = await productServices.deleteProduct(req.params.id);
+    const product = await productServices.remove(req.params.id);
 
     if (!product) {
       return res.status(404).json({ message: "Product not found" });

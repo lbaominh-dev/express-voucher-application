@@ -1,22 +1,33 @@
 import express from "express";
-import {
-  createProduct,
-  deleteProduct,
-  getAllProducts,
-  getProductById,
-  updateProduct,
-} from "./product.controller";
-import { createProductSchema, updateProductSchema } from "./product.validation";
+import { create, remove, getAll, getById, update } from "./product.controller";
+import { createSchema, updateSchema } from "./product.validation";
 import validateMiddleware from "../../middlewares/validate.middleware";
 
 const app = express.Router();
 
+app.get("/products", getAll);
+
+app.post("/product", validateMiddleware(createSchema), create);
+
+app.get("/product/:id", getById);
+
+app.put("/product/:id", validateMiddleware(updateSchema), update);
+
+app.delete("/product/:id", remove);
+
+export default app;
+
 /**
- * @openapi
+ * @swagger
  * tags:
  *  name: Products
  *  description: API for products in the system
- * /api/products:
+ * 
+*/
+
+/**
+ * @swagger
+ * /products/:
  *  get:
  *      summary: Get all products
  *      description: Get all products
@@ -30,11 +41,10 @@ const app = express.Router();
  *                   type: array
  *                   $ref: '#/components/schemas/Product'
  */
-app.get("/", getAllProducts);
 
 /**
- * @openapi
- * /api/products:
+ * @swagger
+ * /product/:
  *  post:
  *      summary: Create a new product
  *      tags: [Products]
@@ -62,11 +72,10 @@ app.get("/", getAllProducts);
  *                  message:
  *                    type: string
  */
-app.post("/", validateMiddleware(createProductSchema), createProduct);
 
 /**
- * @openapi
- * /api/products/{id}:
+ * @swagger
+ * /product/{id}:
  *  get:
  *      summary: Get a product by id
  *      tags: [Products]
@@ -80,11 +89,10 @@ app.post("/", validateMiddleware(createProductSchema), createProduct);
  *        200:
  *         description: Product found successfully
  */
-app.get("/:id", getProductById);
 
 /**
- * @openapi
- * /api/products/{id}:
+ * @swagger
+ * /product/{id}:
  *  put:
  *      summary: Update a product by id
  *      tags: [Products]
@@ -98,11 +106,10 @@ app.get("/:id", getProductById);
  *         200:
  *          description: Product updated successfully
  */
-app.put("/:id", validateMiddleware(updateProductSchema), updateProduct);
 
 /**
- * @openapi
- * /api/products/{id}:
+ * @swagger
+ * /product/{id}:
  *  delete:
  *      summary: Delete a product by id
  *      tags: [Products]
@@ -116,6 +123,4 @@ app.put("/:id", validateMiddleware(updateProductSchema), updateProduct);
  *         200:
  *          description: Product deleted successfully
  */
-app.delete("/:id", deleteProduct);
 
-export default app;

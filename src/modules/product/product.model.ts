@@ -8,7 +8,7 @@ export interface ProductDocument extends mongoose.Document {
 }
 
 /**
- * @openapi
+ * @swagger
  * components:
  *   schemas:
  *     Product:

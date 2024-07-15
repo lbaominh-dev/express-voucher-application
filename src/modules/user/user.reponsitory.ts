@@ -1,27 +1,27 @@
 import { User, UserModel } from "./user.model";
-import { RegisterUserInput } from "./user.validation";
+import { RegisterUserInput } from "../auth/auth.validation";
 
-const getAllUsers = async () => {
+const getAll = async () => {
   return await UserModel.find();
 };
 
-const createUser = async (user: RegisterUserInput) => {
+const create = async (user: RegisterUserInput) => {
   return await UserModel.create(user);
 };
 
-const findUserByEmail = async (email: string) => {
+const getByEmail = async (email: string) => {
   return await UserModel.findOne({ email });
 };
 
-const getUserById = async (id: string) => {
+const getById = async (id: string) => {
   return await UserModel.findById(id).select("-password -refreshToken");
 };
 
 const userRepository = {
-  getAllUsers,
-  createUser,
-  findUserByEmail,
-  getUserById,
+  getAll,
+  create,
+  getByEmail,
+  getById,
 };
 
 export default userRepository;
