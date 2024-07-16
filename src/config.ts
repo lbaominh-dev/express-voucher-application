@@ -1,4 +1,8 @@
 import mongoose from "mongoose";
+import dotenv from "dotenv";
+import path from "path";
+
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 export const DB_URI = process.env.MONGO_URI || "mongodb://localhost:27017/test";
 export const DB_OPTIONS: mongoose.ConnectOptions = {

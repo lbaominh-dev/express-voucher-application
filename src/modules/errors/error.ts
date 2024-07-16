@@ -39,7 +39,7 @@ export const errorHandler = (
   };
 
   // TODO: Use logger to log this exception
-  console.error(response);
+  // console.error(response);
 
   res.status(statusCode).json(response);
 };

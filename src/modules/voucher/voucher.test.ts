@@ -9,7 +9,7 @@ import { EventModel, Event } from "../event/event.model";
 import { UserModel } from "../user/user.model";
 
 initTest();
-setupTestDB("vouchers");
+setupTestDB();
 
 const user = {
   name: faker.internet.userName(),
@@ -96,8 +96,6 @@ describe("Voucher Module", () => {
         .post("/api/voucher")
         .send(voucher)
         .expect(httpStatus.NOT_FOUND);
-
-      console.log(res.body);
 
       expect(res.body.message).toBe("Event not found");
     });

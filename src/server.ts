@@ -1,14 +1,9 @@
 import "module-alias/register";
 
-import connectDB from "./lib/database";
-import dotenv from "dotenv";
-import path from "path";
 import app from "./app";
-import initAgenda from "./lib/agenda";
-import { startWorker } from "./lib/bullmq";
 import { PORT } from "./config";
-
-dotenv.config({ path: path.resolve(__dirname, "../.env") });
+import { startWorker } from "./lib/bullmq";
+import connectDB from "./lib/database";
 
 const startServer = async () => {
   await connectDB();

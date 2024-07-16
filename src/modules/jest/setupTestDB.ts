@@ -9,7 +9,7 @@ const setupTestDB = (collectionName?: string) => {
   beforeEach(async () => {
     await Promise.all(
       Object.values(mongoose.connection.collections).map(async (collection) => {
-        if (collection.collectionName === collectionName) {
+        if (!collectionName || collection.collectionName === collectionName) {
           collection.deleteMany({});
         }
       })
