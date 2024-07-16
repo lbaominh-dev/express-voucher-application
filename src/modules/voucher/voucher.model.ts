@@ -10,7 +10,7 @@ export interface Voucher {
 }
 
 export const VoucherSchema = new mongoose.Schema<Voucher>({
-  code: { type: String, required: true },
+  code: { type: String, required: true, unique: true },
   discount: { type: Number, required: true },
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   eventId: {
